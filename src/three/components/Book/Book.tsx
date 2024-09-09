@@ -176,7 +176,7 @@ const Page: React.FC<IProps> = ({
 
     turningTime = Math.sin(turningTime * Math.PI);
 
-    let targetRotation = opened ? -Math.PI / 2 : Math.PI / 2;
+    let targetRotation = opened ? -Math.PI / 2.5 : Math.PI / 2.5;
     if (!bookClosed) {
       targetRotation += degToRad(number * 0.8);
     }
@@ -206,13 +206,19 @@ const Page: React.FC<IProps> = ({
         foldRotationAngle = 0;
       }
 
-      easing.damp(target!.rotation, "y", rotationAngle, easingFactor, delta);
+      easing.dampAngle(
+        target!.rotation,
+        "y",
+        rotationAngle,
+        easingFactor,
+        delta
+      );
 
       const foldIntensity =
         i > 8
           ? Math.sin(i * Math.PI * (1 / bones.length) - 0.5) * turningTime
           : 0;
-      easing.damp(
+      easing.dampAngle(
         target!.rotation,
         "x",
         foldRotationAngle * foldIntensity,
@@ -227,7 +233,7 @@ const Page: React.FC<IProps> = ({
       <primitive
         object={manualSkinnedMesh}
         ref={skinnedMeshRef}
-        position-z={-number * PAGE_DEPTH + page * PAGE_DEPTH}
+        position-z={-number * PAGE_DEPTH + page * PAGE_DEPTH * 2}
       ></primitive>
     </group>
   );
@@ -236,7 +242,6 @@ const Page: React.FC<IProps> = ({
 const Book = ({ ...props }) => {
   const page = useInteractStore((state) => state.curPage);
 
-  console.log("pages", pages);
   return (
     <group {...props} rotation-y={-Math.PI / 2}>
       {[...pages].map((item, index) => {
