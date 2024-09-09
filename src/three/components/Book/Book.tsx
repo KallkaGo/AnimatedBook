@@ -18,6 +18,7 @@ import {
   SkeletonHelper,
   SRGBColorSpace,
   MathUtils,
+  RepeatWrapping,
 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
 
@@ -103,11 +104,17 @@ const Page: React.FC<IProps> = ({
     `/textures/${front}.jpg`,
     `/textures/${back}.jpg`,
     ...(number === 0 || number === pages.length - 1
-      ? ["/textures/book-cover-roughness.jpg"]
+      ? ["/textures/kallka-book-cover-roughness.jpg"]
       : []),
   ]);
 
   picture.colorSpace = picture2.colorSpace = SRGBColorSpace;
+  if (pictureRoughness) {
+    pictureRoughness.wrapS = pictureRoughness.wrapT = RepeatWrapping;
+    pictureRoughness.center.set(0.5, 0.5);
+    pictureRoughness.rotation = degToRad(45);
+    pictureRoughness.repeat.set(3, 3);
+  }
 
   const groupRef = useRef(null);
 

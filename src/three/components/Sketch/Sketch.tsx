@@ -1,20 +1,25 @@
-import { Environment, OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls, useEnvironment } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useInteractStore, useLoadedStore } from "@utils/Store";
 import { useEffect, useRef } from "react";
 import Book from "../Book/Book";
 
 const Sketch = () => {
+  const hdr = useEnvironment({ files: "/hdrs/studio.hdr" });
+
+  const scene = useThree((state) => state.scene);
+
   const controlDom = useInteractStore((state) => state.controlDom);
 
   useEffect(() => {
     useLoadedStore.setState({ ready: true });
+    scene.environment = hdr;
   }, []);
 
   return (
     <>
       <OrbitControls domElement={controlDom} />
-      <Environment preset="sunset" />
+      <ambientLight intensity={5} />
       <directionalLight
         position={[2, 5, 2]}
         intensity={2.5}
