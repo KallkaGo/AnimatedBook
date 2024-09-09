@@ -6,7 +6,7 @@ import { Leva } from "leva";
 import Sketch from "./components/Sketch/Sketch";
 export default function ThreeContainer() {
   const demand = useInteractStore((state) => state.demand);
-  
+
   return (
     <>
       <Leva collapsed hidden={location.hash !== "#debug"} />
@@ -15,9 +15,9 @@ export default function ThreeContainer() {
         className="webgl"
         dpr={[1, 2]}
         camera={{
-          fov: 50,
+          fov: 45,
           near: 0.1,
-          position: [0, 0, 5],
+          position: [-0.5, 1, 4],
           far: 500,
         }}
       >

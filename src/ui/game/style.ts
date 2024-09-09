@@ -56,7 +56,6 @@ export const GameWrapper = styled.div`
     border-radius: 9999px;
     font-size: 1.125rem;
     line-height: 1.75rem;
-    text-transform: uppercase;
     flex-shrink: 0;
     border-width: 1px;
     border-style: solid;

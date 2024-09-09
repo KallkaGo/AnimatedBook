@@ -1,7 +1,8 @@
-import { OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useInteractStore, useLoadedStore } from "@utils/Store";
 import { useEffect, useRef } from "react";
+import Book from "../Book/Book";
 
 const Sketch = () => {
   const controlDom = useInteractStore((state) => state.controlDom);
@@ -13,10 +14,16 @@ const Sketch = () => {
   return (
     <>
       <OrbitControls domElement={controlDom} />
-      <mesh>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshBasicMaterial color="hotpink" />
-      </mesh>
+      <ambientLight intensity={2.5} />
+      <directionalLight
+        position={[2, 5, 2]}
+        intensity={2.5}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-bias={-0.0001}
+      ></directionalLight>
+      <Book />
     </>
   );
 };
