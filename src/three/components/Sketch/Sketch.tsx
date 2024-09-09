@@ -14,7 +14,7 @@ const Sketch = () => {
   return (
     <>
       <OrbitControls domElement={controlDom} />
-      <ambientLight intensity={2.5} />
+      <Environment preset="sunset" />
       <directionalLight
         position={[2, 5, 2]}
         intensity={2.5}

@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { useInteractStore } from "@utils/Store";
 import { easing } from "maath";
 import { useMemo, useRef } from "react";
+import gsap from "gsap";
 import {
   BoxGeometry,
   Vector3,
@@ -156,19 +157,15 @@ const Page: React.FC<IProps> = ({
     return mesh;
   }, []);
 
-  // useHelper(skinnedMeshRef as any, SkeletonHelper);
-
   useFrame((state, delta) => {
     if (!skinnedMeshRef.current) return;
 
     if (lastOpened.current !== opened) {
-      console.log(number, opened);
       turnedAt.current = +new Date();
       lastOpened.current = opened;
     }
 
-    let turningTime =
-      Math.min(400, (new Date() as any) - turnedAt.current) / 400;
+    let turningTime = Math.min(400, +new Date() - turnedAt.current) / 400;
 
     turningTime = Math.sin(turningTime * Math.PI);
 
@@ -202,19 +199,13 @@ const Page: React.FC<IProps> = ({
         foldRotationAngle = 0;
       }
 
-      easing.dampAngle(
-        target!.rotation,
-        "y",
-        rotationAngle,
-        easingFactor,
-        delta
-      );
+      easing.damp(target!.rotation, "y", rotationAngle, easingFactor, delta);
 
       const foldIntensity =
         i > 8
           ? Math.sin(i * Math.PI * (1 / bones.length) - 0.5) * turningTime
           : 0;
-      easing.dampAngle(
+      easing.damp(
         target!.rotation,
         "x",
         foldRotationAngle * foldIntensity,
@@ -238,7 +229,7 @@ const Page: React.FC<IProps> = ({
 const Book = ({ ...props }) => {
   const page = useInteractStore((state) => state.curPage);
 
-  console.log('pages',pages);
+  console.log("pages", pages);
   return (
     <group {...props} rotation-y={-Math.PI / 2}>
       {[...pages].map((item, index) => {
