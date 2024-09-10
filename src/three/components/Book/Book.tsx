@@ -192,7 +192,7 @@ const Page: React.FC<IProps> = ({
 
       gsap.to(baseParam.current, {
         factor: 1,
-        duration: 0.4,
+        duration: 0.34,
         ease: "power1.inOut",
       });
     },
@@ -247,6 +247,7 @@ const Page: React.FC<IProps> = ({
       rotationAngle *= factor;
 
       let foldRotationAngle = degToRad(Math.sign(targetRotation) * 2);
+      foldRotationAngle *= factor;
 
       if (bookClosed) {
         if (i === 0) {
