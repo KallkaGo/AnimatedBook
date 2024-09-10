@@ -23,6 +23,7 @@ import {
   Material,
 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
+import { useGSAP } from "@gsap/react";
 
 interface IProps {
   number: number;
@@ -126,6 +127,10 @@ const Page: React.FC<IProps> = ({
 
   const groupRef = useRef(null);
 
+  const baseParam = useRef({
+    factor: 0,
+  });
+
   const skinnedMeshRef = useRef<SkinnedMesh>();
 
   const turnedAt = useRef(0);
@@ -178,8 +183,26 @@ const Page: React.FC<IProps> = ({
 
   // useHelper(skinnedMeshRef as any, SkeletonHelper);
 
+  useGSAP(
+    () => {
+      gsap.killTweensOf(baseParam.current);
+      gsap.set(baseParam.current, {
+        factor: 0,
+      });
+
+      gsap.to(baseParam.current, {
+        factor: 1,
+        duration: 0.4,
+        ease: "power1.inOut",
+      });
+    },
+    { dependencies: [opened] }
+  );
+
   useFrame((state, delta) => {
     if (!skinnedMeshRef.current) return;
+
+    const { factor } = baseParam.current;
 
     const emissiveIntensity = highlight ? 0.22 : 0;
 
@@ -198,7 +221,7 @@ const Page: React.FC<IProps> = ({
 
     const diff = +new Date() - turnedAt.current;
 
-    let turningTime = Math.min(300, diff) / 300;
+    let turningTime = Math.min(400, diff) / 400;
 
     turningTime = Math.sin(turningTime * Math.PI);
 
@@ -220,6 +243,8 @@ const Page: React.FC<IProps> = ({
         insideCurveStrength * insideCurveIntensity * targetRotation -
         outsideCurveStrength * outsideCurveIntensity * targetRotation +
         turningCurveStrength * turningIntensity * targetRotation;
+
+      rotationAngle *= factor;
 
       let foldRotationAngle = degToRad(Math.sign(targetRotation) * 2);
 
@@ -276,7 +301,7 @@ const Page: React.FC<IProps> = ({
       <primitive
         object={manualSkinnedMesh}
         ref={skinnedMeshRef}
-        position-z={-number * PAGE_DEPTH + 0.01}
+        position-z={-number * PAGE_DEPTH + 0.02}
       ></primitive>
     </group>
   );
