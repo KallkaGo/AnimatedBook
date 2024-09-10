@@ -196,7 +196,9 @@ const Page: React.FC<IProps> = ({
       lastOpened.current = opened;
     }
 
-    let turningTime = Math.min(400, +new Date() - turnedAt.current) / 400;
+    const diff = +new Date() - turnedAt.current;
+
+    let turningTime = Math.min(300, diff) / 300;
 
     turningTime = Math.sin(turningTime * Math.PI);
 
@@ -227,6 +229,7 @@ const Page: React.FC<IProps> = ({
         } else {
           rotationAngle = 0;
         }
+
         foldRotationAngle = 0;
       }
 
@@ -273,15 +276,13 @@ const Page: React.FC<IProps> = ({
       <primitive
         object={manualSkinnedMesh}
         ref={skinnedMeshRef}
-        position-z={-number * PAGE_DEPTH}
+        position-z={-number * PAGE_DEPTH + 0.01}
       ></primitive>
     </group>
   );
 };
 
 const Book = ({ ...props }) => {
-  console.log("Book");
-
   const page = useInteractStore((state) => state.curPage);
 
   const [delayedPage, setDelayedPage] = useState(page);
@@ -298,7 +299,7 @@ const Book = ({ ...props }) => {
             () => {
               goToPage();
             },
-            Math.abs(page - preState) > 2 ? 150 : 200
+            Math.abs(page - preState) > 2 ? 50 : 150
           );
 
           if (page > preState) {
