@@ -217,7 +217,7 @@ const Page: React.FC<IProps> = ({
       let rotationAngle =
         insideCurveStrength * insideCurveIntensity * targetRotation -
         outsideCurveStrength * outsideCurveIntensity * targetRotation +
-        turningCurveStrength * turningIntensity * targetRotation * 0;
+        turningCurveStrength * turningIntensity * targetRotation;
 
       let foldRotationAngle = degToRad(Math.sign(targetRotation) * 2);
 
