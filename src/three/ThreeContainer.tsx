@@ -11,6 +11,7 @@ export default function ThreeContainer() {
     <>
       <Leva collapsed hidden={location.hash !== "#debug"} />
       <Canvas
+        shadows
         frameloop={demand ? "never" : "always"}
         className="webgl"
         dpr={[1, 2]}

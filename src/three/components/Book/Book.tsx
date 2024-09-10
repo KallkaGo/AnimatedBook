@@ -1,5 +1,5 @@
 import { pages } from "@/constant/book";
-import { useHelper, useTexture } from "@react-three/drei";
+import { useCursor, useHelper, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useInteractStore } from "@utils/Store";
 import { easing } from "maath";
@@ -19,6 +19,8 @@ import {
   SRGBColorSpace,
   MathUtils,
   RepeatWrapping,
+  Color,
+  Material,
 } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
 
@@ -91,6 +93,8 @@ const pageMaterials = [
   }),
 ];
 
+const emissiveColor = new Color("orange");
+
 const Page: React.FC<IProps> = ({
   number,
   front,
@@ -115,6 +119,10 @@ const Page: React.FC<IProps> = ({
     pictureRoughness.rotation = degToRad(45);
     pictureRoughness.repeat.set(3, 3);
   }
+
+  const [highlight, setHighlight] = useState(false);
+
+  useCursor(highlight);
 
   const groupRef = useRef(null);
 
@@ -146,6 +154,8 @@ const Page: React.FC<IProps> = ({
         ...(number === 0
           ? { roughnessMap: pictureRoughness }
           : { roughness: 0.1 }),
+        emissive: emissiveColor,
+        emissiveIntensity: 0,
       }),
       new MeshStandardMaterial({
         color: "white",
@@ -153,6 +163,8 @@ const Page: React.FC<IProps> = ({
         ...(number === pages.length - 1
           ? { roughnessMap: pictureRoughness }
           : { roughness: 0.1 }),
+        emissive: emissiveColor,
+        emissiveIntensity: 0,
       }),
     ];
     const mesh = new SkinnedMesh(pageGeometry, materials);
@@ -164,10 +176,20 @@ const Page: React.FC<IProps> = ({
     return mesh;
   }, []);
 
-  useHelper(skinnedMeshRef as any, SkeletonHelper);
+  // useHelper(skinnedMeshRef as any, SkeletonHelper);
 
   useFrame((state, delta) => {
     if (!skinnedMeshRef.current) return;
+
+    const emissiveIntensity = highlight ? 0.22 : 0;
+
+    const mat = skinnedMeshRef.current.material as MeshStandardMaterial[];
+
+    mat[4].emissiveIntensity = mat[5].emissiveIntensity = MathUtils.lerp(
+      mat[4].emissiveIntensity,
+      emissiveIntensity,
+      0.1
+    );
 
     if (lastOpened.current !== opened) {
       turnedAt.current = +new Date();
@@ -195,7 +217,7 @@ const Page: React.FC<IProps> = ({
       let rotationAngle =
         insideCurveStrength * insideCurveIntensity * targetRotation -
         outsideCurveStrength * outsideCurveIntensity * targetRotation +
-        turningCurveStrength * turningIntensity * targetRotation;
+        turningCurveStrength * turningIntensity * targetRotation * 0;
 
       let foldRotationAngle = degToRad(Math.sign(targetRotation) * 2);
 
@@ -231,7 +253,23 @@ const Page: React.FC<IProps> = ({
   });
 
   return (
-    <group {...props} ref={groupRef}>
+    <group
+      {...props}
+      ref={groupRef}
+      onPointerEnter={(e) => {
+        e.stopPropagation();
+        setHighlight(true);
+      }}
+      onPointerLeave={(e) => {
+        e.stopPropagation();
+        setHighlight(false);
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        setHighlight(false);
+        useInteractStore.setState({ curPage: opened ? number : number + 1 });
+      }}
+    >
       <primitive
         object={manualSkinnedMesh}
         ref={skinnedMeshRef}
@@ -242,6 +280,8 @@ const Page: React.FC<IProps> = ({
 };
 
 const Book = ({ ...props }) => {
+  console.log("Book");
+
   const page = useInteractStore((state) => state.curPage);
 
   const [delayedPage, setDelayedPage] = useState(page);
