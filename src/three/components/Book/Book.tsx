@@ -3,7 +3,7 @@ import { useHelper, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useInteractStore } from "@utils/Store";
 import { easing } from "maath";
-import { useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import {
   BoxGeometry,
@@ -164,6 +164,8 @@ const Page: React.FC<IProps> = ({
     return mesh;
   }, []);
 
+  useHelper(skinnedMeshRef as any, SkeletonHelper);
+
   useFrame((state, delta) => {
     if (!skinnedMeshRef.current) return;
 
@@ -233,7 +235,7 @@ const Page: React.FC<IProps> = ({
       <primitive
         object={manualSkinnedMesh}
         ref={skinnedMeshRef}
-        position-z={-number * PAGE_DEPTH + page * PAGE_DEPTH * 2}
+        position-z={-number * PAGE_DEPTH}
       ></primitive>
     </group>
   );
@@ -242,6 +244,36 @@ const Page: React.FC<IProps> = ({
 const Book = ({ ...props }) => {
   const page = useInteractStore((state) => state.curPage);
 
+  const [delayedPage, setDelayedPage] = useState(page);
+
+  useEffect(() => {
+    let timeOut: NodeJS.Timeout;
+
+    const goToPage = () => {
+      setDelayedPage((preState) => {
+        if (preState === page) {
+          return preState;
+        } else {
+          timeOut = setTimeout(
+            () => {
+              goToPage();
+            },
+            Math.abs(page - preState) > 2 ? 150 : 200
+          );
+
+          if (page > preState) {
+            return preState + 1;
+          }
+          return preState - 1;
+        }
+      });
+    };
+
+    goToPage();
+
+    return () => clearTimeout(timeOut);
+  }, [page]);
+
   return (
     <group {...props} rotation-y={-Math.PI / 2}>
       {[...pages].map((item, index) => {
@@ -249,9 +281,9 @@ const Book = ({ ...props }) => {
           <Page
             key={index}
             number={index}
-            opened={page > index}
-            bookClosed={page === 0 || page === pages.length}
-            page={page}
+            opened={delayedPage > index}
+            bookClosed={delayedPage === 0 || delayedPage === pages.length}
+            page={delayedPage}
             {...item}
           />
         );
