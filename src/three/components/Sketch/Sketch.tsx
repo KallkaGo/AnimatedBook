@@ -39,6 +39,7 @@ const Sketch = () => {
         shadow-mapSize-height={1024}
         shadow-bias={-0.0001}
       ></directionalLight>
+      <pointLight position={[0, -1, 0]} intensity={2.5} />
       <Float
         rotation-x={-Math.PI / 4}
         floatIntensity={2}
