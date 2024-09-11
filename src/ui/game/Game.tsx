@@ -10,7 +10,7 @@ const Game = () => {
   const gameRef = useRef<HTMLDivElement>(null);
   const aniDone = useRef(false);
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndex = useInteractStore((state)=>state.curPage)
 
   useGSAP(() => {
     gsap.set(gameRef.current, { opacity: 0 });
@@ -66,7 +66,6 @@ const Game = () => {
                         : "rgba(255,255,255,1)",
                   }}
                   onClick={() => {
-                    setActiveIndex(index);
                     useInteractStore.setState({ curPage: index });
                   }}
                 >
@@ -87,7 +86,6 @@ const Game = () => {
                     : "rgba(255,255,255,1)",
               }}
               onClick={() => {
-                setActiveIndex(pages.length);
                 useInteractStore.setState({ curPage: pages.length });
               }}
             >
