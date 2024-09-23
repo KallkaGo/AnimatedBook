@@ -79,6 +79,11 @@ pageGeometry.setAttribute(
   new Float32BufferAttribute(skinWeights, 4)
 );
 
+/* 
+根据坐标系的顺序来设置每个面的材质
+即 X -> Y -> Z
+右 左 上 下 前 后
+*/
 const pageMaterials = [
   new MeshStandardMaterial({
     color: "white",
